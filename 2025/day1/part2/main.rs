@@ -1,0 +1,38 @@
+use std::fs;
+use std::io::{self, BufRead};
+
+
+fn main() {
+    let file = fs::File::open("input.txt").expect("Failed to open file");
+    let file_reader = io::BufReader::new(file);
+
+    let mut zeros = 0;
+    let mut dial = 50;
+
+    for line in file_reader.lines() {
+        let line = line.unwrap();
+
+        let mut chars = line.chars();
+        let rotation: char = chars.next().unwrap();
+        let value: i64 = chars.collect::<String>().parse().unwrap();
+
+        match rotation {
+            'R' => {
+                let total = dial + value;
+                zeros += total / 100;
+                dial = total % 100;
+            },
+            'L' => {
+                let rev_dial = (100 - dial) % 100;
+                zeros += (rev_dial + value) / 100;
+                dial = (dial - value) % 100;
+                if dial < 0 {
+                    dial = 100 + dial;
+                }
+            },
+            _ => {},
+        };
+    }
+
+    println!("Answer: {}", zeros);
+}
